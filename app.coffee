@@ -114,7 +114,7 @@ parseKml = (kml,callback) ->
                 global.w = window
                 gxtrack = window.$('Placemark')
                 if not gxtrack then return callback "NO GXTRACK"
-                console.log gxtrack.children.length
+                if gxtrack.children.length < 4 then return callback()
                 pointData = gxtrack.children()[3].children._toArray()
                 pointData.pop()
                 pointData.shift()

@@ -170,7 +170,9 @@
           if (!gxtrack) {
             return callback("NO GXTRACK");
           }
-          console.log(gxtrack.children.length);
+          if (gxtrack.children.length < 4) {
+            return callback();
+          }
           pointData = gxtrack.children()[3].children._toArray();
           pointData.pop();
           pointData.shift();
