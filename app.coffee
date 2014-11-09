@@ -9,9 +9,8 @@ request = require 'request'
 helpers = require 'helpers'
 env = {}
 
-
 cookie = require('./cookie').cookie
-console.log cookie
+
 initModels = (callback) -> 
     console.log 'initializing models...'
     env.settings = new collections.MongoCollection db: env.db, collection: 'settings'

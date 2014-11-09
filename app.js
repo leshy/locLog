@@ -24,8 +24,6 @@
 
   cookie = require('./cookie').cookie;
 
-  console.log(cookie);
-
   initModels = function(callback) {
     console.log('initializing models...');
     env.settings = new collections.MongoCollection({
