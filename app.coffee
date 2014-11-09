@@ -109,6 +109,7 @@ parseKml = (kml,callback) ->
         src: [ fs.readFileSync('zepto.min.js', 'utf8') ]
         html: kml
         done: (err,window) ->
+            if err then return callback err
             global.w = window
             gxtrack = window.$('Placemark').children()[3]
             pointData = gxtrack.children._toArray()

@@ -161,6 +161,9 @@
       html: kml,
       done: function(err, window) {
         var gxtrack, pointArray, pointData, popy, queue;
+        if (err) {
+          return callback(err);
+        }
         global.w = window;
         gxtrack = window.$('Placemark').children()[3];
         pointData = gxtrack.children._toArray();
