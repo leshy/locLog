@@ -109,26 +109,28 @@ parseKml = (kml,callback) ->
         src: [ fs.readFileSync('zepto.min.js', 'utf8') ]
         html: kml
         done: (err,window) ->
-            if err then return callback err
-            global.w = window
-            gxtrack = window.$('Placemark').children()[3]
-            pointData = gxtrack.children._toArray()
-            pointData.pop()
-            pointData.shift()
-            pointData.shift()
-            
-            pointArray = []
-            popy = ->
-                pointArray.push new env.point time: pointData.pop().innerHTML, coords: pointData.pop().innerHTML
+            try
+                if err then return callback err
+                global.w = window
+                gxtrack = window.$('Placemark').children()[3]
+                pointData = gxtrack.children._toArray()
+                pointData.pop()
+                pointData.shift()
+                pointData.shift()
                 
-            popy() while pointData.length 
+                pointArray = []
+                popy = ->
+                    pointArray.push new env.point time: pointData.pop().innerHTML, coords: pointData.pop().innerHTML
+                    
+                popy() while pointData.length 
 
-            queue = new helpers.queue size: 10
-            pointArray.forEach (point,i) -> queue.push i, ((callback) -> point.save callback)
-            queue.done (err,data) ->
-                console.log "imported #{_.keys(data or {}).length} new points (#{_.keys(err or {}).length} old points encountered)"
-                callback()
-
+                queue = new helpers.queue size: 10
+                pointArray.forEach (point,i) -> queue.push i, ((callback) -> point.save callback)
+                queue.done (err,data) ->
+                    console.log "imported #{_.keys(data or {}).length} new points (#{_.keys(err or {}).length} old points encountered)"
+                    callback()
+            catch
+                callback true
 getParseLoop = (callback) ->
     loopy = -> 
         getKml (err,data) ->
