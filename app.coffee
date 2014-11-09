@@ -137,6 +137,7 @@ getParseLoop = (callback) ->
     loopy = -> 
         getKml (err,data) ->
             if err then return callback()
+            loopy()
     loopy()
         
 init = (callback) ->

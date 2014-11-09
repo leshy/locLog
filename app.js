@@ -213,6 +213,7 @@
         if (err) {
           return callback();
         }
+        return loopy();
       });
     };
     return loopy();
