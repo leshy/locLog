@@ -136,12 +136,16 @@
     }, function(error, response, body) {
       if (!error && response.statusCode === 200) {
         console.log('got kml', body);
-        env.memory.set({
-          last: to
-        });
-        return env.memory.flush(function() {
-          env.kml = body;
-          return callback(error, body);
+        return parseKml(kml, function(err, data) {
+          if (err) {
+            return callback(true);
+          }
+          env.memory.set({
+            last: to
+          });
+          return env.memory.flush(function() {
+            return callback(error, body);
+          });
         });
       } else {
         console.log('error with request to google', error, (response != null ? response.statusCode : void 0) || null);
@@ -150,11 +154,11 @@
     });
   };
 
-  parseKml = function(callback) {
+  parseKml = function(kml, callback) {
     console.log('parsing kml...');
     return jsdom.env({
       src: [fs.readFileSync('zepto.min.js', 'utf8')],
-      html: env.kml,
+      html: kml,
       done: function(err, window) {
         var gxtrack, pointArray, pointData, popy, queue;
         global.w = window;
@@ -195,8 +199,6 @@
       return getKml(function(err, data) {
         if (err) {
           return callback();
-        } else {
-          return parseKml(loopy);
         }
       });
     };

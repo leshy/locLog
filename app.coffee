@@ -94,19 +94,20 @@ getKml = (callback) ->
         }, (error,response,body) ->
             if not error and response.statusCode is 200
                 console.log 'got kml', body
-                env.memory.set last: to
-                env.memory.flush -> 
-                    env.kml = body
-                    callback error, body
+                parseKml kml, (err,data) ->
+                    if err then return callback true 
+                    env.memory.set last: to
+                    env.memory.flush -> 
+                        callback error, body
             else
                 console.log 'error with request to google', error, response?.statusCode or null
                 callback true
 
-parseKml = (callback) ->
+parseKml = (kml,callback) ->
     console.log 'parsing kml...'
     jsdom.env
         src: [ fs.readFileSync('zepto.min.js', 'utf8') ]
-        html: env.kml
+        html: kml
         done: (err,window) ->
             global.w = window
             gxtrack = window.$('Placemark').children()[3]
@@ -130,7 +131,7 @@ parseKml = (callback) ->
 getParseLoop = (callback) ->
     loopy = -> 
         getKml (err,data) ->
-            if err then return callback() else parseKml loopy
+            if err then return callback()
     loopy()
         
 init = (callback) ->
