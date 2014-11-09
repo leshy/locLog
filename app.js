@@ -133,9 +133,9 @@
         'Cookie': cookie,
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36'
       }
-    }, function(error, response, body) {
+    }, function(error, response, kml) {
       if (!error && response.statusCode === 200) {
-        console.log('got kml', body);
+        console.log('got kml', kml);
         return parseKml(kml, function(err, data) {
           if (err) {
             return callback(true);

@@ -91,9 +91,9 @@ getKml = (callback) ->
             'Cookie': cookie
             'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36'
             }
-        }, (error,response,body) ->
+        }, (error,response,kml) ->
             if not error and response.statusCode is 200
-                console.log 'got kml', body
+                console.log 'got kml', kml
                 parseKml kml, (err,data) ->
                     if err then return callback true 
                     env.memory.set last: to
