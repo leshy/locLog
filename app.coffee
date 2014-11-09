@@ -117,7 +117,7 @@ parseKml = (kml,callback) ->
             pointData = gxtrack[3].children._toArray()
 
             if pointData.length < 4
-                console.log "empty kml", pointData.length
+                console.log "no data (#{pointData.length})"
                 return callback()
             pointData.pop()
             pointData.shift()
