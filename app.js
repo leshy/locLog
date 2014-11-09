@@ -170,9 +170,11 @@
           return callback("NO GXTRACK, what is this?");
         }
         gxtrack = gxtrack.children();
-        console.log(gxtrack.length);
         pointData = gxtrack[3].children._toArray();
-        console.log(pointData.length);
+        if (pointData.length < 4) {
+          console.log("empty kml", pointData.length);
+          return callback();
+        }
         pointData.pop();
         pointData.shift();
         pointData.shift();
