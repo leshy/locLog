@@ -171,7 +171,7 @@
         }
         gxtrack = gxtrack.children();
         console.log(gxtrack.length);
-        if (gxtrack.length < 5) {
+        if (gxtrack.length < 4) {
           console.log("empty kml", gxtrack.length);
           return callback();
         }
