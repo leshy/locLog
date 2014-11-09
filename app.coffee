@@ -113,10 +113,11 @@ parseKml = (kml,callback) ->
             global.w = window
             gxtrack = window.$('Placemark')
             if not gxtrack then return callback "NO GXTRACK, what is this?"
-            if gxtrack.children.length < 3
-                console.log "empty kml"
+            gxtrack = gxtrack.children()
+            if gxtrack.length < 2
+                console.log "empty kml", gxtrack.length
                 return callback()
-            pointData = gxtrack.children()[3].children._toArray()
+            pointData = gxtrack[3].children._toArray()
             pointData.pop()
             pointData.shift()
             pointData.shift()
