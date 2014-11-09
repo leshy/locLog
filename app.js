@@ -167,6 +167,7 @@
           }
           global.w = window;
           gxtrack = window.$('Placemark');
+          console.log(gxtrack);
           if (!gxtrack) {
             console.log("NO GXTRACK");
           }
