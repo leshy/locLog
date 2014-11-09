@@ -78,7 +78,7 @@ getKml_ = (from,to,callback) ->
     
 getKml = (callback) ->
     from = env.memory.get 'last'
-    to = from + helpers.hour
+    to = from + (helpers.hour * 3)
 
     if new Date().getTime() - from < helpers.minute * 10 then return callback true
         
