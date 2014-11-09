@@ -167,10 +167,10 @@
           }
           global.w = window;
           gxtrack = window.$('Placemark');
-          console.log(gxtrack);
           if (!gxtrack) {
-            console.log("NO GXTRACK");
+            return callback("NO GXTRACK");
           }
+          console.log(gxtrack.children.length);
           pointData = gxtrack.children()[3].children._toArray();
           pointData.pop();
           pointData.shift();
