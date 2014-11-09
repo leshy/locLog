@@ -170,8 +170,8 @@
           return callback("NO GXTRACK, what is this?");
         }
         gxtrack = gxtrack.children();
-        console.log(gxtrack.length, gxtrack[0].innerHTML, gxtrack[1].innerHTML, gxtrack[2].innerHTML, gxtrack[3].innerHTML);
-        if (gxtrack.length < 2) {
+        console.log(gxtrack.length);
+        if (gxtrack.length < 5) {
           console.log("empty kml", gxtrack.length);
           return callback();
         }
