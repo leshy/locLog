@@ -176,6 +176,7 @@
           return callback();
         }
         pointData = gxtrack[3].children._toArray();
+        console.log(pointData);
         pointData.pop();
         pointData.shift();
         pointData.shift();

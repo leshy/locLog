@@ -119,6 +119,7 @@ parseKml = (kml,callback) ->
                 console.log "empty kml", gxtrack.length
                 return callback()
             pointData = gxtrack[3].children._toArray()
+            console.log pointData
             pointData.pop()
             pointData.shift()
             pointData.shift()
