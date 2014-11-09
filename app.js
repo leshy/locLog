@@ -120,7 +120,7 @@
   getKml = function(callback) {
     var from, to;
     from = env.memory.get('last');
-    to = from + helpers.day;
+    to = from + helpers.hour;
     if (new Date().getTime() - from < helpers.minute * 10) {
       return callback(true);
     }
