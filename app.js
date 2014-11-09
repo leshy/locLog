@@ -144,7 +144,7 @@
             last: to
           });
           return env.memory.flush(function() {
-            return callback(error, body);
+            return callback(error, kml);
           });
         });
       } else {
@@ -168,7 +168,7 @@
           global.w = window;
           gxtrack = window.$('Placemark');
           if (!gxtrack) {
-            return callback("NO GXTRACK");
+            return callback("NO GXTRACK, what is this?");
           }
           if (gxtrack.children.length < 4) {
             return callback();

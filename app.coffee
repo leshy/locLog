@@ -98,7 +98,7 @@ getKml = (callback) ->
                     if err then return callback true 
                     env.memory.set last: to
                     env.memory.flush -> 
-                        callback error, body
+                        callback error, kml
             else
                 console.log 'error with request to google', error, response?.statusCode or null
                 callback true
@@ -113,7 +113,7 @@ parseKml = (kml,callback) ->
                 if err then return callback err
                 global.w = window
                 gxtrack = window.$('Placemark')
-                if not gxtrack then return callback "NO GXTRACK"
+                if not gxtrack then return callback "NO GXTRACK, what is this?"
                 if gxtrack.children.length < 4 then return callback()
                 pointData = gxtrack.children()[3].children._toArray()
                 pointData.pop()
