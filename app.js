@@ -161,47 +161,44 @@
       html: kml,
       done: function(err, window) {
         var gxtrack, pointArray, pointData, popy, queue;
-        try {
-          if (err) {
-            return callback(err);
-          }
-          global.w = window;
-          gxtrack = window.$('Placemark');
-          if (!gxtrack) {
-            return callback("NO GXTRACK, what is this?");
-          }
-          if (gxtrack.children.length < 4) {
-            return callback();
-          }
-          pointData = gxtrack.children()[3].children._toArray();
-          pointData.pop();
-          pointData.shift();
-          pointData.shift();
-          pointArray = [];
-          popy = function() {
-            return pointArray.push(new env.point({
-              time: pointData.pop().innerHTML,
-              coords: pointData.pop().innerHTML
-            }));
-          };
-          while (pointData.length) {
-            popy();
-          }
-          queue = new helpers.queue({
-            size: 10
-          });
-          pointArray.forEach(function(point, i) {
-            return queue.push(i, (function(callback) {
-              return point.save(callback);
-            }));
-          });
-          return queue.done(function(err, data) {
-            console.log("imported " + (_.keys(data || {}).length) + " new points (" + (_.keys(err || {}).length) + " old points encountered)");
-            return callback();
-          });
-        } catch (_error) {
-          return callback(true);
+        if (err) {
+          return callback(err);
         }
+        global.w = window;
+        gxtrack = window.$('Placemark');
+        if (!gxtrack) {
+          return callback("NO GXTRACK, what is this?");
+        }
+        if (gxtrack.children.length < 3) {
+          console.log("empty kml");
+          return callback();
+        }
+        pointData = gxtrack.children()[3].children._toArray();
+        pointData.pop();
+        pointData.shift();
+        pointData.shift();
+        pointArray = [];
+        popy = function() {
+          return pointArray.push(new env.point({
+            time: pointData.pop().innerHTML,
+            coords: pointData.pop().innerHTML
+          }));
+        };
+        while (pointData.length) {
+          popy();
+        }
+        queue = new helpers.queue({
+          size: 10
+        });
+        pointArray.forEach(function(point, i) {
+          return queue.push(i, (function(callback) {
+            return point.save(callback);
+          }));
+        });
+        return queue.done(function(err, data) {
+          console.log("imported " + (_.keys(data || {}).length) + " new points (" + (_.keys(err || {}).length) + " old points encountered)");
+          return callback();
+        });
       }
     });
   };

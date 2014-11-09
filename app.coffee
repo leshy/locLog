@@ -109,30 +109,29 @@ parseKml = (kml,callback) ->
         src: [ fs.readFileSync('zepto.min.js', 'utf8') ]
         html: kml
         done: (err,window) ->
-            try
-                if err then return callback err
-                global.w = window
-                gxtrack = window.$('Placemark')
-                if not gxtrack then return callback "NO GXTRACK, what is this?"
-                if gxtrack.children.length < 4 then return callback()
-                pointData = gxtrack.children()[3].children._toArray()
-                pointData.pop()
-                pointData.shift()
-                pointData.shift()
+            if err then return callback err
+            global.w = window
+            gxtrack = window.$('Placemark')
+            if not gxtrack then return callback "NO GXTRACK, what is this?"
+            if gxtrack.children.length < 3
+                console.log "empty kml"
+                return callback()
+            pointData = gxtrack.children()[3].children._toArray()
+            pointData.pop()
+            pointData.shift()
+            pointData.shift()
                 
-                pointArray = []
-                popy = ->
-                    pointArray.push new env.point time: pointData.pop().innerHTML, coords: pointData.pop().innerHTML
+            pointArray = []
+            popy = ->
+                pointArray.push new env.point time: pointData.pop().innerHTML, coords: pointData.pop().innerHTML
                     
-                popy() while pointData.length 
+            popy() while pointData.length 
 
-                queue = new helpers.queue size: 10
-                pointArray.forEach (point,i) -> queue.push i, ((callback) -> point.save callback)
-                queue.done (err,data) ->
-                    console.log "imported #{_.keys(data or {}).length} new points (#{_.keys(err or {}).length} old points encountered)"
-                    callback()
-            catch
-                callback true
+            queue = new helpers.queue size: 10
+            pointArray.forEach (point,i) -> queue.push i, ((callback) -> point.save callback)
+            queue.done (err,data) ->
+                console.log "imported #{_.keys(data or {}).length} new points (#{_.keys(err or {}).length} old points encountered)"
+                callback()
 getParseLoop = (callback) ->
     loopy = -> 
         getKml (err,data) ->
