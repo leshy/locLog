@@ -41,7 +41,7 @@
         time = this.get('time').match('(.*)-(.*)-(.*)T(.*):(.*):(.*)\\.(.*)-(.*):(.*)');
         date = new Date();
         date.setUTCFullYear(time[1]);
-        date.setUTCMonth(time[2]);
+        date.setUTCMonth(time[2] - 1);
         date.setUTCDate(time[3]);
         date.setUTCHours(time[4]);
         date.setUTCMinutes(time[5]);
@@ -133,12 +133,8 @@
     }, function(error, response, kml) {
       if (!error && response.statusCode === 200) {
         console.log('got kml', kml);
-        return parseKml(kml, function(err, data) {
-          if (err) {
-            return callback(true);
-          }
-          return callback(error, kml);
-        });
+        env.kml = kml;
+        return callback();
       } else {
         console.log('error with request to google', error, (response != null ? response.statusCode : void 0) || null);
         return callback(true);
@@ -146,11 +142,11 @@
     });
   };
 
-  parseKml = function(kml, callback) {
+  parseKml = function(callback) {
     console.log('parsing kml...');
     return jsdom.env({
       src: [fs.readFileSync('zepto.min.js', 'utf8')],
-      html: kml,
+      html: env.kml,
       done: function(err, window) {
         var gxtrack, pointArray, pointData, popy, queue;
         if (err) {
@@ -193,7 +189,10 @@
         });
         return queue.done(function(err, data) {
           console.log("imported " + (_.keys(data || {}).length) + " new points (" + (_.keys(err || {}).length) + " old points encountered)");
-          return env.memory.flush(callback);
+          return env.memory.flush(function() {
+            console.log(new Date(env.memory.get('last')));
+            return callback();
+          });
         });
       }
     });
@@ -203,7 +202,6 @@
     var loopy;
     loopy = function() {
       return getKml(function(err, data) {
-        console.log(err, data);
         if (err) {
           return callback();
         }
@@ -218,7 +216,8 @@
       db: initDb,
       models: ['db', initModels],
       memory: ['models', initMemory],
-      getParseLoop: ['memory', getParseLoop],
+      getKml: ['memory', getKml],
+      parseKml: ['getKml', 'models', parseKml],
       close: ['getParseLoop', closeDb]
     }, callback);
   };

@@ -24,7 +24,7 @@ initModels = (callback) ->
             
             date = new Date()
             date.setUTCFullYear time[1]
-            date.setUTCMonth time[2]
+            date.setUTCMonth (time[2] - 1)
             date.setUTCDate time[3]
             date.setUTCHours time[4]
             date.setUTCMinutes time[5]
@@ -92,18 +92,20 @@ getKml = (callback) ->
         }, (error,response,kml) ->
             if not error and response.statusCode is 200
                 console.log 'got kml', kml
-                parseKml kml, (err,data) ->
-                    if err then return callback true 
-                    callback error, kml
+                env.kml = kml
+                callback()
+                #parseKml kml, (err,data) ->
+                #    if err then return callback true 
+                #    callback error, kml
             else
                 console.log 'error with request to google', error, response?.statusCode or null
                 callback true
 
-parseKml = (kml,callback) ->
+parseKml = (callback) ->
     console.log 'parsing kml...'
     jsdom.env
         src: [ fs.readFileSync('zepto.min.js', 'utf8') ]
-        html: kml
+        html: env.kml
         done: (err,window) ->
             if err then return callback err
             global.w = window
@@ -131,12 +133,14 @@ parseKml = (kml,callback) ->
                 point.save callback)
             queue.done (err,data) ->
                 console.log "imported #{_.keys(data or {}).length} new points (#{_.keys(err or {}).length} old points encountered)"
-                env.memory.flush callback
+                env.memory.flush ->
+                    console.log new Date(env.memory.get 'last')
+                    callback()
 
 getParseLoop = (callback) ->
     loopy = -> 
         getKml (err,data) ->
-            console.log err, data
+            #console.log err, data
             if err then return callback()
             loopy()
     loopy()
@@ -146,11 +150,12 @@ init = (callback) ->
         db: initDb
         models: [ 'db', initModels ]
         memory: [ 'models', initMemory ]
-        getParseLoop: [ 'memory', getParseLoop ]
-#        getKml: [ 'memory', getKml ]
-#        parseKml: [ 'getKml','models', parseKml ]
+#        getParseLoop: [ 'memory', getParseLoop ]
+        getKml: [ 'memory', getKml ]
+        parseKml: [ 'getKml','models', parseKml ]
         close: [ 'getParseLoop', closeDb ]
         }, callback
+
 
 
             
