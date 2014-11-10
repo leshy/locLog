@@ -120,10 +120,7 @@
   getKml = function(callback) {
     var from, to;
     from = env.memory.get('last');
-    to = from + (helpers.hour * 3);
-    if (new Date().getTime() - from < helpers.minute * 10) {
-      return callback(true);
-    }
+    to = new Date().getTime();
     console.log("requesting kml from " + (new Date(from)) + " to " + (new Date(to)));
     return request({
       url: "https://maps.google.com/locationhistory/b/0/kml?startTime=" + from + "&endTime=" + to,
@@ -206,6 +203,7 @@
     var loopy;
     loopy = function() {
       return getKml(function(err, data) {
+        console.log(err, data);
         if (err) {
           return callback();
         }

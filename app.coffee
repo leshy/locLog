@@ -78,9 +78,7 @@ getKml_ = (from,to,callback) ->
     
 getKml = (callback) ->
     from = env.memory.get 'last'
-    to = from + (helpers.hour * 3)
-
-    if new Date().getTime() - from < helpers.minute * 10 then return callback true
+    to = new Date().getTime()
         
     console.log "requesting kml from #{ new Date(from) } to #{ new Date(to) }"
     request {
@@ -138,6 +136,7 @@ parseKml = (kml,callback) ->
 getParseLoop = (callback) ->
     loopy = -> 
         getKml (err,data) ->
+            console.log err, data
             if err then return callback()
             loopy()
     loopy()
