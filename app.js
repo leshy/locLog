@@ -100,7 +100,7 @@
 
   initDb = function(callback) {
     console.log('connecting to database...');
-    env.db = new mongodb.Db('loclog', new mongodb.Server('localhost', 27017), {
+    env.db = new mongodb.Db('loc', new mongodb.Server('localhost', 27017), {
       safe: true
     });
     return env.db.open(callback);
