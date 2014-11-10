@@ -96,9 +96,7 @@ getKml = (callback) ->
                 console.log 'got kml', kml
                 parseKml kml, (err,data) ->
                     if err then return callback true 
-                    env.memory.set last: to
-                    env.memory.flush -> 
-                        callback error, kml
+                    callback error, kml
             else
                 console.log 'error with request to google', error, response?.statusCode or null
                 callback true
@@ -130,10 +128,13 @@ parseKml = (kml,callback) ->
             popy() while pointData.length 
 
             queue = new helpers.queue size: 10
-            pointArray.forEach (point,i) -> queue.push i, ((callback) -> point.save callback)
+            pointArray.forEach (point,i) -> queue.push i, ((callback) ->
+                env.memory.set last: point.get 'time'
+                point.save callback)
             queue.done (err,data) ->
                 console.log "imported #{_.keys(data or {}).length} new points (#{_.keys(err or {}).length} old points encountered)"
-                callback()
+                env.memory.flush callback
+
 getParseLoop = (callback) ->
     loopy = -> 
         getKml (err,data) ->

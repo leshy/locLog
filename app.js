@@ -140,12 +140,7 @@
           if (err) {
             return callback(true);
           }
-          env.memory.set({
-            last: to
-          });
-          return env.memory.flush(function() {
-            return callback(error, kml);
-          });
+          return callback(error, kml);
         });
       } else {
         console.log('error with request to google', error, (response != null ? response.statusCode : void 0) || null);
@@ -193,12 +188,15 @@
         });
         pointArray.forEach(function(point, i) {
           return queue.push(i, (function(callback) {
+            env.memory.set({
+              last: point.get('time')
+            });
             return point.save(callback);
           }));
         });
         return queue.done(function(err, data) {
           console.log("imported " + (_.keys(data || {}).length) + " new points (" + (_.keys(err || {}).length) + " old points encountered)");
-          return callback();
+          return env.memory.flush(callback);
         });
       }
     });
