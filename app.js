@@ -218,7 +218,7 @@
       memory: ['models', initMemory],
       getKml: ['memory', getKml],
       parseKml: ['getKml', 'models', parseKml],
-      close: ['getParseLoop', closeDb]
+      close: ['parseKml', closeDb]
     }, callback);
   };
 
