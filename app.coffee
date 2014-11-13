@@ -19,6 +19,7 @@ initModels = (callback) ->
     env.points = new collections.MongoCollection db: env.db, collection: 'points'
     env.point = env.points.defineModel 'point',
         initialize: () ->
+            if @get('time').constructor is Number then return
             #2014-09-27T15:33:46.745-07:00 -> date object
             time = @get('time').match('(.*)-(.*)-(.*)T(.*):(.*):(.*)\\.(.*)-(.*):(.*)')
             
@@ -60,6 +61,7 @@ initMemory = (callback) ->
         else
             console.log 'memory loaded', memory.attributes
             env.memory = memory; callback()
+
 
 
 initDb = (callback) ->
@@ -144,16 +146,51 @@ getParseLoop = (callback) ->
             if err then return callback()
             loopy()
     loopy()
+
+
+filter = (callback) ->
+    distance = (p1,p2) ->
+
+#        console.log 'crds', p1.lat, p2.lat
+        R = 6371
+        φ1 = p1.lat * Math.PI / 180
+        φ2 = p2.lat * Math.PI / 180
+        Δφ = (p2.lat-p1.lat) * Math.PI / 180
+        Δλ = (p2.lng-p1.lng) * Math.PI / 180
+
+        a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
         
+        d = R * c * 1000;
+
+    lastpoint = undefined
+    env.points.findModels {ignore: false}, { sort: { time: -1 }}, ((err,point) ->
+        if lastpoint
+            d = distance(lastpoint.attributes,point.attributes)
+            if d > 500000
+                point.set ignore:true
+                point.flush (err,data) -> console.log err,data, d, new Date(point.get('time'))
+                console.log 'ignoring', d, new Date(point.get('time'))
+            else
+                lastpoint = point
+        else
+            lastpoint = point
+        ), (err,data) ->
+            console.log 'filer done'
+            callback()
+                                                
 init = (callback) ->
     async.auto {
         db: initDb
         models: [ 'db', initModels ]
         memory: [ 'models', initMemory ]
-#        getParseLoop: [ 'memory', getParseLoop ]
         getKml: [ 'memory', getKml ]
         parseKml: [ 'getKml','models', parseKml ]
-        close: [ 'parseKml', closeDb ]
+        filter: [ 'parseKml', filter ]
+        close: [ 'filter', closeDb ]
         }, callback
 
 
