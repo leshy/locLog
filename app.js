@@ -228,9 +228,7 @@
       return d = R * c * 1000;
     };
     lastpoint = void 0;
-    return env.points.findModels({
-      ignore: false
-    }, {
+    return env.points.findModels({}, {
       sort: {
         time: -1
       }

@@ -54,6 +54,7 @@ initMemory = (callback) ->
         console.log 'memory not found, creating new one'
         env.memory = new env.setting name: 'memory', last: new Date().getTime() - (helpers.day * 30)
         env.memory.flush callback
+
         
         
     env.settings.findModel { name: 'memory' }, (err,memory) ->
@@ -167,7 +168,7 @@ filter = (callback) ->
         d = R * c * 1000;
 
     lastpoint = undefined
-    env.points.findModels {ignore: false}, { sort: { time: -1 }}, ((err,point) ->
+    env.points.findModels {}, { sort: { time: -1 }}, ((err,point) ->
         if lastpoint
             d = distance(lastpoint.attributes,point.attributes)
             if d > 500000
