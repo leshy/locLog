@@ -148,40 +148,6 @@ getParseLoop = (callback) ->
             loopy()
     loopy()
 
-
-filter = (callback) ->
-    distance = (p1,p2) ->
-
-#        console.log 'crds', p1.lat, p2.lat
-        R = 6371
-        φ1 = p1.lat * Math.PI / 180
-        φ2 = p2.lat * Math.PI / 180
-        Δφ = (p2.lat-p1.lat) * Math.PI / 180
-        Δλ = (p2.lng-p1.lng) * Math.PI / 180
-
-        a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ/2) * Math.sin(Δλ/2);
-        c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-        
-        d = R * c * 1000;
-
-    lastpoint = undefined
-    env.points.findModels {}, { sort: { time: -1 }}, ((err,point) ->
-        if lastpoint
-            d = distance(lastpoint.attributes,point.attributes)
-            if d > 500000
-                point.set ignore:true
-                point.flush (err,data) -> console.log err,data, d, new Date(point.get('time'))
-                console.log 'ignoring', d, new Date(point.get('time'))
-            else
-                lastpoint = point
-        else
-            lastpoint = point
-        ), (err,data) ->
-            console.log 'filer done'
-            callback()
                                                 
 init = (callback) ->
     async.auto {
@@ -190,8 +156,7 @@ init = (callback) ->
         memory: [ 'models', initMemory ]
         getKml: [ 'memory', getKml ]
         parseKml: [ 'getKml','models', parseKml ]
-        filter: [ 'parseKml', filter ]
-        close: [ 'filter', closeDb ]
+        close: [ 'parseKml', closeDb ]
         }, callback
 
 
